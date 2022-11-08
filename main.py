@@ -1,0 +1,3 @@
+import webScraping
+
+webScraping.webScraping()
