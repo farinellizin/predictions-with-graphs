@@ -1,10 +1,10 @@
 # Libs usadas: pandas, requests, openpyxl, lxml
-
 import pandas as pd 
 import requests
 from openpyxl.workbook import Workbook
 
-def webScraping():
+# Retorna os últimos confrontos entre os times x e y
+def webScraping_headToHead(x, y):
 	header = {
 		"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
 		"X-Requested-With": "XMLHttpRequest"
@@ -35,10 +35,7 @@ def webScraping():
 	'america_MG': '2227', 'sao_paulo': '2256', 'botafogo': '2233','fortaleza': '2239', 'santos': '2254', 'goias': '2244', 'bragantino': '3156', 'coritiba': '2235', 
 	'cuiaba': '3220', 'ceara': '3183', 'atletico_go': '3129', 'avai': '2615', 'juventude': '2246'}
 
-	time_1 = input("Digite o time 1: ").lower()
-	time_2 = input("Digite o time 2: ").lower()
-
-	url_link = "https://www.ogol.com.br/xray.php?id_comp=51&ond=r&epoca_ini=0&epoca_fim=0&equipa_id=" + ids_times[time_1] + "&equipa_vs_equipa_id=" + ids_times[time_2] + "&player_detail="
+	url_link = "https://www.ogol.com.br/xray.php?id_comp=51&ond=r&epoca_ini=0&epoca_fim=0&equipa_id=" + ids_times[x] + "&equipa_vs_equipa_id=" + ids_times[y] + "&player_detail="
 	req = requests.get(url_link, headers = header)
 	df = pd.read_html(req.text)
 
@@ -63,17 +60,40 @@ def webScraping():
 
 	print("")
 
-	for x in range(number_rows):
-		if stats.Time_1[x] == time2:
-			temp1 = stats.Time_2[x]
-			stats.Time_2[x] = stats.Time_1[x]
-			stats.Time_1[x] = temp1
+	for i in range(number_rows):
+		if stats.Time_1[i] == time2:
+			temp1 = stats.Time_2[i]
+			stats.Time_2[i] = stats.Time_1[i]
+			stats.Time_1[i] = temp1
 
-			temp2 = stats.Gols_Time_2[x]
-			stats.Gols_Time_2[x] = stats.Gols_Time_1[x]
-			stats.Gols_Time_1[x] = temp2
+			temp2 = stats.Gols_Time_2[i]
+			stats.Gols_Time_2[i] = stats.Gols_Time_1[i]
+			stats.Gols_Time_1[i] = temp2
 
-		print(stats.Time_1[x], "	", stats.Gols_Time_1[x], " x ", stats.Gols_Time_2[x], "	", stats.Time_2[x], "	-	Ano:", stats.Ano[x])
+		print(stats.Time_1[i], "	", stats.Gols_Time_1[i], " x ", stats.Gols_Time_2[i], "	", stats.Time_2[i], "	-	Ano:", stats.Ano[i])
 
 	print("\nSalvando estatísticas...\n")
-	stats.to_excel("statistics.xlsx")
+
+	stats.to_excel("head_to_head/" + x + "_vs_" + y + ".xlsx")
+
+
+# Retorna as posições no brasileirão do time x nos últimos anos
+def webScraping_position(x):
+	ids_times = {'palmeiras': '1023', 'internacional': '6600', 'fluminense': '2462', 'corinthians': '199', 'flamengo': '614', 'atletico_pr': '679', 'atletico_mg': '330', 
+	'america_MG': '2863', 'sao_paulo': '585', 'botafogo': '537','fortaleza': '10870', 'santos': '221', 'goias': '3197', 'bragantino': '8793', 'coritiba': '776', 
+	'cuiaba': '28022', 'ceara': '2029', 'atletico_go': '15172', 'avai': '2035', 'juventude': '10492'}
+
+	header = {
+		"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+		"X-Requested-With": "XMLHttpRequest"
+	}
+
+	url_link = "https://www.transfermarkt.com.br/standart-team/platzierungen/verein/" + ids_times[x]
+	req = requests.get(url_link, headers = header)
+	df = pd.read_html(req.text)
+
+	stats = df[1].copy()
+	stats = stats[['Temporada', 'Pontos']]
+	stats = stats.rename(columns={'Temporada': 'Temporada', 'Pontos': 'Colocação'})
+
+	stats.to_excel("position/" + x + ".xlsx")
