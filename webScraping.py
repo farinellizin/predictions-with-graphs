@@ -76,6 +76,41 @@ def webScraping_headToHead(x, y):
 
 	stats.to_excel("head_to_head/" + x + "_vs_" + y + ".xlsx")
 
+def arithmeticsPositionAverage(stats):
+	boundary = stats.last_valid_index() + 1
+	lvi = 17
+
+	if (boundary != 17):
+		desconsider = 17 - boundary
+	else:
+		desconsider = 0
+
+	# print(f'{boundary} // {desconsider}')
+
+	numerator = 0
+	j = 1
+	denominator = 0
+
+	while j <= 17:
+		denominator = denominator + j
+		j = j + 1
+
+	# print(f'BOUNDARY: {boundary}')
+
+	for i in range(boundary + desconsider):
+		if i < (boundary) and stats['Divisão'].iloc[i] != "Segunda Divisão":
+			numerator = numerator + (stats['Colocação'].iloc[i] * (lvi / 17))
+			# print(f"Primeira condição: {stats['Colocação'].iloc[i]} x {lvi / 17}")
+		elif i < (boundary) and stats['Divisão'].iloc[i] == "Segunda Divisão":
+			# print(f"Segunda condição: {16} x {lvi / 17}")
+			numerator = numerator + (16 * (lvi / 17))
+		elif i >= boundary:
+			# print(f"Terçeira Condição: {20} x {lvi / 17}")
+			numerator = numerator + (20 * (lvi / 17))
+
+		lvi = lvi - 1
+
+	return (numerator/denominator)
 
 # Retorna as posições no brasileirão do time x nos últimos anos
 def webScraping_position(x):
@@ -93,7 +128,8 @@ def webScraping_position(x):
 	df = pd.read_html(req.text)
 
 	stats = df[1].copy()
-	stats = stats[['Temporada', 'Pontos']]
-	stats = stats.rename(columns={'Temporada': 'Temporada', 'Pontos': 'Colocação'})
+	stats = stats[['Temporada', 'Pontos', 'Liga.2']]
+	stats = stats.rename(columns={'Temporada': 'Temporada', 'Pontos': 'Colocação', 'Liga.2': 'Divisão'})
 
 	stats.to_excel("position/" + x + ".xlsx")
+	return (arithmeticsPositionAverage(stats))
