@@ -1,5 +1,8 @@
+from xml.etree.ElementInclude import DEFAULT_MAX_INCLUSION_DEPTH
 import webScraping
 import networkx as nx
+import matplotlib.pyplot as plt
+
 
 team_names = ["palmeiras", "internacional", "fluminense", "corinthians", "flamengo", "atletico_pr", "atletico_mg",
 "america_MG", "sao_paulo", "botafogo", "fortaleza", "santos", "goias", "bragantino", "coritiba", "cuiaba", "ceara", 
@@ -27,26 +30,22 @@ graph_names = ['palmeiras', 'internacional', 'fluminense', 'corinthians', 'flame
 'atletico_go', 'avai', 'juventude']
 
 for i in range(len(graph_names)-1, 0, -1):
-    print(i)
     for j in range(i):
         if (average_position[graph_names[i]] < average_position[graph_names[j]]):
-            print(f'Posição I: {average_position[graph_names[i]]} // Posição J: {average_position[graph_names[j]]} // ENTROU IF')
-            winner = [{graph_names[i], graph_names[j]}]
+            graph.add_edge(graph_names[i], graph_names[j])
         else:
-            print(f'Posição I: {average_position[graph_names[i]]} // Posição J: {average_position[graph_names[j]]} // ENTROU ELSE')
-            # print('entrou else')
-            winner = [{graph_names[j], graph_names[i]}]
+            graph.add_edge(graph_names[j], graph_names[i])
 
-        graph.add_edges_from(winner)
-
-print(graph.edges)
+print(graph.edges())
         
+pos = nx.spring_layout(graph)
+nx.draw_networkx_nodes(graph, pos, node_size=500)
+nx.draw_networkx_edges(graph, pos, edgelist=graph.edges(), edge_color='black')
+nx.draw_networkx_labels(graph, pos)
+plt.show()
 
-        
-        
 
-
-
+# nx.draw(graph)
 
 # # E = [{'palmeiras', 'avai'}]
 
