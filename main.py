@@ -10,6 +10,7 @@ def Menu():
     print('\t\t5 - Flamengo \t\t15 - Coritiba\n\t\t6 - Atlético-PR\t\t16 - Cuiabá')
     print('\t\t7 - Atlético-MG \t17 - Ceará\n\t\t8 - América-MG\t\t18 - Atlético-GO')
     print('\t\t9 - São Paulo \t\t19 - Avaí\n\t\t10 - Botafogo\t\t20 - Juventude')
+    print('\n\t\t~ Para sair, selecione dois times iguais ~')
 
     team1 = 0
     team2 = 0
@@ -21,6 +22,25 @@ def Menu():
         team2 = int(input('\tInforme o número do segundo time: '))
 
     return team1, team2
+
+def printGraph(graph):
+    option = 3
+    
+    while option != 1 and option != 2:
+        print('\n\n\t\t   ~ Deseja visualizar o Grafo? ~\n')
+        print('\t\t   1 - Sim \t\t2 - Não\n')    
+        option = int(input('\n\n\t\t- Sua opção: '))
+
+        if option == 1:
+            pos = nx.spring_layout(graph)
+            nx.draw_networkx_nodes(graph, pos, node_size=500)
+            nx.draw_networkx_edges(graph, pos, edgelist=graph.edges(), edge_color='black')
+            nx.draw_networkx_labels(graph, pos)
+            plt.show()
+        elif option == 2:
+            print('\n\n\t\t\t~ Fim da execução ~\n\n')
+        else:
+            print('\t\tOpção inválida, tente novamente!')
 
 team_codes = {1: 'palmeiras', 2: 'internacional', 3: 'fluminense', 4: 'corinthians' , 5: 'flamengo', 6: 'atletico_pr', 7: 'atletico_mg', 8: 'america_MG', 9: 'sao_paulo',
 10: 'botafogo', 11: 'fortaleza', 12: 'santos', 13: 'goias', 14: 'bragantino', 15: 'coritiba', 16: 'cuiaba', 17: 'ceara', 18: 'atletico_go', 19: 'avai', 20: 'juventude'}
@@ -49,23 +69,22 @@ for i in range(len(graph_names)-1, 0, -1):
         else:
             graph.add_edge(graph_names[j], graph_names[i])
 
-while True:
+t1 = 0
+t2 = 1
+
+while t1 != t2:
     t1, t2 = Menu()
 
-    namewinner1 = team_output_names[t1]
-    namewinner2 = team_output_names[t2]
+    if t1 != t2:
+        namewinner1 = team_output_names[t1]
+        namewinner2 = team_output_names[t2]
 
-    t1 = team_codes[t1]
-    t2 = team_codes[t2]
+        t1 = team_codes[t1]
+        t2 = team_codes[t2]
 
-    if graph.has_edge(t1, t2):
-        print(f'\n\t\t~ Há maior chances de vitória para o {namewinner1} ~\n\n\n')
-    else:
-        print(f'\n\t\t~ Há maior chances de vitória para o {namewinner2} ~\n\n\n')
+        if graph.has_edge(t1, t2):
+            print(f'\n\t\t~ Há maior chances de vitória para o {namewinner1} ~\n\n\n')
+        else:
+            print(f'\n\t\t~ Há maior chances de vitória para o {namewinner2} ~\n\n\n')
 
-# print(graph.edges())        
-# pos = nx.spring_layout(graph)
-# nx.draw_networkx_nodes(graph, pos, node_size=500)
-# nx.draw_networkx_edges(graph, pos, edgelist=graph.edges(), edge_color='black')
-# nx.draw_networkx_labels(graph, pos)
-# plt.show()
+printGraph(graph)
